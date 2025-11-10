@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabulary & Writing Helper</title>
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Vocab Helper">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Vocabulary & Writing Helper</h1>
+            <p class="subtitle">Learn vocabulary through creative storytelling!</p>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="vocabulary">Vocabulary Practice</button>
+            <button class="tab-btn" data-tab="review">My Progress</button>
+            <button class="tab-btn" data-tab="writing">Writing (Coming Soon)</button>
+        </nav>
+
+        <main>
+            <!-- Vocabulary Tab -->
+            <section id="vocabulary-tab" class="tab-content active">
+                <div class="input-section">
+                    <h2>Enter Your Vocabulary Words</h2>
+                    <p class="instructions">Add words one at a time, or paste a comma-separated list</p>
+                    
+                    <div class="vocab-input-group">
+                        <input type="text" id="vocab-input" placeholder="Enter a word (e.g., serendipity, ephemeral, jubilant)">
+                        <button id="add-vocab-btn" class="btn btn-primary">Add Word</button>
+                    </div>
+
+                    <div class="word-list-container">
+                        <h3>Your Vocabulary List (<span id="word-count">0</span> words)</h3>
+                        <ul id="word-list"></ul>
+                        <button id="clear-list-btn" class="btn btn-secondary">Clear List</button>
+                    </div>
+                </div>
+
+                <div class="generation-section">
+                    <h2>Story Settings</h2>
+                    
+                    <div class="settings-grid">
+                        <div class="setting-group">
+                            <label for="story-type">Story Type:</label>
+                            <select id="story-type">
+                                <option value="adventure">Adventure</option>
+                                <option value="mystery">Mystery</option>
+                                <option value="fantasy">Fantasy</option>
+                                <option value="scifi">Science Fiction</option>
+                                <option value="historical">Historical</option>
+                                <option value="comedy">Comedy</option>
+                                <option value="informative">Informative (Non-fiction)</option>
+                            </select>
+                        </div>
+
+                        <div class="setting-group">
+                            <label for="story-length">Story Length:</label>
+                            <select id="story-length">
+                                <option value="short" selected>Short (80-120 words)</option>
+                                <option value="medium">Medium (200-250 words)</option>
+                                <option value="long">Long (300-400 words)</option>
+                            </select>
+                        </div>
+
+                        <div class="setting-group">
+                            <label for="tone">Tone:</label>
+                            <select id="tone">
+                                <option value="fun">Fun & Playful</option>
+                                <option value="serious">Serious</option>
+                                <option value="inspiring">Inspiring</option>
+                                <option value="educational">Educational</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button id="generate-story-btn" class="btn btn-large btn-primary">
+                        ✨ Generate Story
+                    </button>
+                </div>
+
+                <div id="story-output" class="story-output hidden">
+                    <div class="output-header">
+                        <h2>Your Generated Story</h2>
+                        <div class="output-actions">
+                            <button id="copy-story-btn" class="btn btn-secondary">📋 Copy</button>
+                            <button id="save-story-btn" class="btn btn-secondary">💾 Save</button>
+                        </div>
+                    </div>
+                    <div id="story-content" class="story-content"></div>
+                    <div class="vocabulary-highlights">
+                        <h3>Vocabulary Words Used:</h3>
+                        <div id="words-used"></div>
+                    </div>
+                    
+                    <!-- Vocabulary Quiz Section -->
+                    <div id="vocabulary-quiz" class="vocabulary-quiz hidden">
+                        <div class="quiz-header">
+                            <h2>🎮 Test Your Knowledge!</h2>
+                            <p>Click an answer to get <strong>immediate feedback</strong> and learn the correct meaning and usage</p>
+                            <div id="quiz-round-info" class="quiz-round-info hidden">
+                                <span>📚 Practice Round: Focusing on words you missed</span>
+                            </div>
+                            <div class="quiz-score">
+                                <span>Score: <span id="quiz-score">0</span> / <span id="quiz-total">0</span></span>
+                            </div>
+                        </div>
+                        
+                        <div id="quiz-container"></div>
+                        
+                        <div class="quiz-actions">
+                            <button id="check-answers-btn" class="btn btn-primary">Check Answers</button>
+                            <button id="retry-quiz-btn" class="btn btn-secondary hidden">Try Again</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Writing Tab (placeholder) -->
+                        <!-- My Progress Tab -->
+            <section id="review-tab" class="tab-content">
+                <div class="dashboard-section">
+                    <h2>📊 My Vocabulary Progress</h2>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number" id="total-words">0</div>
+                            <div class="stat-label">Total Words Practiced</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="this-week">0</div>
+                            <div class="stat-label">This Week</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="stories-generated">0</div>
+                            <div class="stat-label">Stories Generated</div>
+                        </div>
+                    </div>
+
+                    <div class="weekly-chart">
+                        <h3>Weekly Activity</h3>
+                        <canvas id="weeklyChart"></canvas>
+                    </div>
+
+                    <div class="vocabulary-library">
+                        <h3>My Vocabulary Library</h3>
+                        <div class="search-filter">
+                            <input type="text" id="search-words" placeholder="Search words...">
+                            <select id="sort-words">
+                                <option value="recent">Most Recent</option>
+                                <option value="alpha">Alphabetical</option>
+                                <option value="frequency">Most Used</option>
+                            </select>
+                        </div>
+                        <div id="vocabulary-grid"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Writing Tab -->
+                        </section>
+
+            <!-- Writing Tab -->
+            <section id="writing-tab" class="tab-content">
+                <div class="writing-section">
+                    <h2>✍️ Writing Practice & Feedback</h2>
+                    <p class="instructions">Type your writing OR upload a photo of your handwritten work for AI feedback!</p>
+                    
+                    <!-- Input Method Tabs -->
+                    <div class="input-method-tabs">
+                        <button class="method-tab active" data-method="text">📝 Type Text</button>
+                        <button class="method-tab" data-method="camera">📷 Take Photo</button>
+                        <button class="method-tab" data-method="image">� Upload Image</button>
+                    </div>
+                    
+                    <div class="writing-container">
+                        <!-- Text Input Method -->
+                        <div id="text-input-method" class="input-method active">
+                            <div class="writing-input-area">
+                                <h3>Your Writing</h3>
+                                <textarea id="writing-input" placeholder="Paste or type your paragraph here...
+
+Example topics:
+- Describe your favorite place
+- Tell a story about an adventure
+- Explain something you learned
+- Share your opinion on a topic
+
+Minimum 3 sentences recommended for best feedback."></textarea>
+                                <div class="writing-tools">
+                                    <span id="word-counter">0 words</span>
+                                    <button id="clear-writing-btn" class="btn btn-secondary">Clear</button>
+                                    <button id="analyze-writing-btn" class="btn btn-primary">🔍 Get Feedback</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Camera Input Method -->
+                        <div id="camera-input-method" class="input-method">
+                            <div class="camera-area">
+                                <h3>Take Photo of Student Work</h3>
+                                <p class="upload-instructions">Position the document clearly in view and take a photo</p>
+                                
+                                <div id="camera-container" class="camera-container">
+                                    <video id="camera-video" autoplay playsinline></video>
+                                    <div class="camera-controls">
+                                        <button id="start-camera-btn" class="btn btn-primary">📷 Start Camera</button>
+                                        <button id="capture-photo-btn" class="btn btn-primary hidden">📸 Capture Photo</button>
+                                        <button id="stop-camera-btn" class="btn btn-secondary hidden">Stop Camera</button>
+                                    </div>
+                                </div>
+
+                                <canvas id="camera-canvas" hidden></canvas>
+
+                                <div id="camera-preview-container" class="image-preview-container hidden">
+                                    <img id="camera-preview" alt="Captured Photo">
+                                    <button id="retake-photo-btn" class="btn btn-secondary">Retake Photo</button>
+                                    <button id="analyze-camera-btn" class="btn btn-primary">🔍 Analyze Photo</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Image Upload Method -->
+                        <div id="image-input-method" class="input-method">
+                            <div class="image-upload-area">
+                                <h3>Upload Student Work</h3>
+                                <p class="upload-instructions">Upload a photo of handwritten work, printed assignments, or worksheets</p>
+                                
+                                <div class="upload-zone" id="upload-zone">
+                                    <input type="file" id="image-input" accept="image/*" hidden>
+                                    <div class="upload-placeholder">
+                                        <div class="upload-icon">�</div>
+                                        <p>Click to upload or drag & drop</p>
+                                        <p class="upload-hint">Supports: JPG, PNG, HEIC (Max 20MB)</p>
+                                    </div>
+                                </div>
+
+                                <div id="image-preview-container" class="image-preview-container hidden">
+                                    <img id="image-preview" alt="Preview">
+                                    <button id="remove-image-btn" class="btn btn-secondary">Remove Image</button>
+                                    <button id="analyze-image-btn" class="btn btn-primary">🔍 Analyze Image</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="feedback-area" class="feedback-area hidden">
+                            <h3>📝 Feedback & Corrections</h3>
+                            
+                            <!-- Original Text Section -->
+                            <div class="feedback-section" id="transcribed-section">
+                                <h4>📄 Your Original Text</h4>
+                                <div id="transcribed-text" class="original-text"></div>
+                            </div>
+
+                            <!-- Error Corrections Section -->
+                            <div class="feedback-section" id="errors-section">
+                                <h4>🔍 Errors Found & Corrections</h4>
+                                <p class="error-instruction">Click on each error to see the correction and explanation</p>
+                                <div id="errors-list" class="errors-container"></div>
+                            </div>
+                            
+                            <div class="feedback-section">
+                                <h4>Overall Score</h4>
+                                <div class="score-display">
+                                    <div class="score-circle">
+                                        <span id="overall-score">-</span>
+                                        <span class="score-label">/100</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="feedback-section">
+                                <h4>✅ Strengths</h4>
+                                <ul id="strengths-list"></ul>
+                            </div>
+
+                            <div class="feedback-section">
+                                <h4>⚠️ Areas to Improve</h4>
+                                <ul id="improvements-list"></ul>
+                            </div>
+
+                            <div class="feedback-section">
+                                <h4>📖 Grammar & Style</h4>
+                                <div id="grammar-feedback"></div>
+                            </div>
+
+                            <div class="feedback-section">
+                                <h4>💡 Specific Suggestions</h4>
+                                <div id="suggestions-feedback"></div>
+                            </div>
+
+                            <div class="feedback-section">
+                                <h4>✨ Fully Corrected Version</h4>
+                                <div id="revised-version" class="revised-text"></div>
+                                <button id="copy-revised-btn" class="btn btn-secondary">📋 Copy Corrected Version</button>
+                            </div>
+
+                            <!-- Practice Games Section -->
+                            <div class="feedback-section" id="games-section">
+                                <h4>🎮 Practice Games</h4>
+                                <p class="games-instruction">Reinforce your learning with these fun games!</p>
+                                <div id="games-container"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+```
+        </main>
+
+        <!-- Word Detail Modal -->
+        <div id="word-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2 id="modal-word"></h2>
+                <div class="word-details">
+                    <div class="detail-section">
+                        <h4>🔊 Pronunciation</h4>
+                        <div class="pronunciation-container">
+                            <p id="modal-pronunciation" class="pronunciation-text">Loading...</p>
+                            <button id="pronunciation-btn" class="btn btn-icon" title="Listen to pronunciation">
+                                🔊 Play
+                            </button>
+                        </div>
+                    </div>
+                    <div class="detail-section">
+                        <h4>📝 Part of Speech</h4>
+                        <p id="modal-part-of-speech">Loading...</p>
+                    </div>
+                    <div class="detail-section">
+                        <h4> Definition</h4>
+                        <p id="modal-definition">Loading...</p>
+                    </div>
+                    <div class="detail-section chinese-section">
+                        <h4>🇨🇳 中文释义 (Chinese Translation)</h4>
+                        <p id="modal-chinese" class="chinese-text">Loading...</p>
+                    </div>
+                    <div class="detail-section">
+                        <h4>💡 Example Usage</h4>
+                        <p id="modal-example">Loading...</p>
+                    </div>
+                    <div class="detail-section">
+                        <h4>🔄 Synonyms</h4>
+                        <p id="modal-synonyms">Loading...</p>
+                    </div>
+                    <div class="detail-section">
+                        <h4>↔️ Antonyms</h4>
+                        <p id="modal-antonyms">Loading...</p>
+                    </div>
+                    <div class="detail-section stems-section">
+                        <h4>🌱 Word Stems & Patterns</h4>
+                        <p id="modal-stems" class="stems-content">Loading...</p>
+                    </div>
+                    <div class="detail-section">
+                        <h4>📊 Your Stats</h4>
+                        <p>Used in <span id="modal-usage-count">0</span> stories</p>
+                        <p>First practiced: <span id="modal-first-used">-</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+```
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

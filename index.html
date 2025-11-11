@@ -47,60 +47,16 @@
                 </div>
 
                 <div class="generation-section">
-                    <h2>Story Settings</h2>
-                    
-                    <div class="settings-grid">
-                        <div class="setting-group">
-                            <label for="story-type">Story Type:</label>
-                            <select id="story-type">
-                                <option value="adventure">Adventure</option>
-                                <option value="mystery">Mystery</option>
-                                <option value="fantasy">Fantasy</option>
-                                <option value="scifi">Science Fiction</option>
-                                <option value="historical">Historical</option>
-                                <option value="comedy">Comedy</option>
-                                <option value="informative">Informative (Non-fiction)</option>
-                            </select>
-                        </div>
-
-                        <div class="setting-group">
-                            <label for="story-length">Story Length:</label>
-                            <select id="story-length">
-                                <option value="short" selected>Short (80-120 words)</option>
-                                <option value="medium">Medium (200-250 words)</option>
-                                <option value="long">Long (300-400 words)</option>
-                            </select>
-                        </div>
-
-                        <div class="setting-group">
-                            <label for="tone">Tone:</label>
-                            <select id="tone">
-                                <option value="fun">Fun & Playful</option>
-                                <option value="serious">Serious</option>
-                                <option value="inspiring">Inspiring</option>
-                                <option value="educational">Educational</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <button id="generate-story-btn" class="btn btn-large btn-primary">
-                        ✨ Generate Story
+                    <button id="generate-definitions-btn" class="btn btn-large btn-primary">
+                        📖 Get Definitions
                     </button>
                 </div>
 
-                <div id="story-output" class="story-output hidden">
+                <div id="definitions-output" class="story-output hidden">
                     <div class="output-header">
-                        <h2>Your Generated Story</h2>
-                        <div class="output-actions">
-                            <button id="copy-story-btn" class="btn btn-secondary">📋 Copy</button>
-                            <button id="save-story-btn" class="btn btn-secondary">💾 Save</button>
-                        </div>
+                        <h2>📖 Vocabulary Definitions</h2>
                     </div>
-                    <div id="story-content" class="story-content"></div>
-                    <div class="vocabulary-highlights">
-                        <h3>Vocabulary Words Used:</h3>
-                        <div id="words-used"></div>
-                    </div>
+                    <div id="definitions-content" class="definitions-content"></div>
                     
                     <!-- Vocabulary Quiz Section -->
                     <div id="vocabulary-quiz" class="vocabulary-quiz hidden">

@@ -98,15 +98,9 @@ const addVocabBtn = document.getElementById('add-vocab-btn');
 const wordList = document.getElementById('word-list');
 const wordCount = document.getElementById('word-count');
 const clearListBtn = document.getElementById('clear-list-btn');
-const generateStoryBtn = document.getElementById('generate-story-btn');
-const storyOutput = document.getElementById('story-output');
-const storyContent = document.getElementById('story-content');
-const wordsUsed = document.getElementById('words-used');
-const copyStoryBtn = document.getElementById('copy-story-btn');
-const saveStoryBtn = document.getElementById('save-story-btn');
-const storyType = document.getElementById('story-type');
-const storyLength = document.getElementById('story-length');
-const tone = document.getElementById('tone');
+const generateDefinitionsBtn = document.getElementById('generate-definitions-btn');
+const definitionsOutput = document.getElementById('definitions-output');
+const definitionsContent = document.getElementById('definitions-content');
 
 // Tab switching
 document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -1789,59 +1783,96 @@ async function retryIncorrectWords() {
 
 // ========== END QUIZ SYSTEM ==========
 
-// Generate story with AI
-generateStoryBtn.addEventListener('click', async () => {
+// Generate definitions with AI
+generateDefinitionsBtn.addEventListener('click', async () => {
     if (vocabularyList.length === 0) {
         alert('Please add at least one vocabulary word!');
         return;
     }
     
     // Show loading state
-    generateStoryBtn.disabled = true;
-    generateStoryBtn.innerHTML = '<span class="loading">🤖 AI is writing your story...</span>';
+    generateDefinitionsBtn.disabled = true;
+    generateDefinitionsBtn.innerHTML = '<span class="loading">🤖 Getting definitions...</span>';
     
     try {
-        const selectedType = storyType.value;
-        const selectedTone = tone.value;
-        const selectedLength = storyLength.value;
+        // Get definitions for all words
+        const definitions = await getVocabularyDefinitions(vocabularyList);
         
-        // Generate story using AI
-        const result = await generateAIStory(vocabularyList, selectedType, selectedLength, selectedTone);
-        
-        // Display the story
-        storyContent.innerHTML = result.content;
-        
-        // Display used words
-        wordsUsed.innerHTML = '';
-        result.usedWords.forEach(word => {
-            const span = document.createElement('span');
-            span.className = 'used-word';
-            span.textContent = word;
-            wordsUsed.appendChild(span);
-        });
+        // Display the definitions
+        definitionsContent.innerHTML = definitions.map(def => `
+            <div class="definition-card">
+                <div class="definition-word">${def.word}</div>
+                <div class="definition-pronunciation">${def.pronunciation || ''}</div>
+                <div class="definition-pos">${def.partOfSpeech}</div>
+                <div class="definition-meaning">${def.definition}</div>
+                <div class="definition-example">"${def.example}"</div>
+                ${def.synonyms ? `<div class="definition-synonyms"><strong>Synonyms:</strong> ${def.synonyms}</div>` : ''}
+            </div>
+        `).join('');
         
         // Track vocabulary usage
-        trackVocabularyUsage(result.usedWords);
+        trackVocabularyUsage(vocabularyList);
         
         // Show output
-        storyOutput.classList.remove('hidden');
-        storyOutput.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        
-        // Generate vocabulary quiz immediately (starts in parallel)
-        generateVocabularyQuiz(result.usedWords).catch(quizError => {
-            console.error('Error generating quiz:', quizError);
-            // Quiz generation failed but story is still shown
-        });
+        definitionsOutput.classList.remove('hidden');
+        definitionsOutput.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         
     } catch (error) {
-        console.error('Error generating story:', error);
-        alert('❌ Error generating story: ' + error.message + '\n\nPlease check your API key in script.js');
+        console.error('Error getting definitions:', error);
+        alert('❌ Error getting definitions: ' + error.message);
     } finally {
         // Reset button
-        generateStoryBtn.disabled = false;
-        generateStoryBtn.innerHTML = '✨ Generate Story';
+        generateDefinitionsBtn.disabled = false;
+        generateDefinitionsBtn.innerHTML = '📖 Get Definitions';
     }
 });
+
+// Get vocabulary definitions using AI
+async function getVocabularyDefinitions(words) {
+    const prompt = `Provide clear, student-friendly definitions for these vocabulary words: ${words.join(', ')}
+
+For each word, provide:
+1. The word itself
+2. Part of speech (noun, verb, adjective, etc.)
+3. Clear definition (one sentence)
+4. An example sentence using the word
+5. 2-3 common synonyms
+6. Pronunciation guide (if helpful)
+
+Format as JSON array with this structure:
+[
+  {
+    "word": "example",
+    "partOfSpeech": "noun",
+    "definition": "a thing serving as a pattern or model",
+    "example": "She set a good example for her classmates.",
+    "synonyms": "model, specimen, illustration",
+    "pronunciation": "ig-ZAM-puhl"
+  }
+]
+
+Return ONLY the JSON array, no other text.`;
+
+    const response = await callOpenAI([
+        {
+            role: 'user',
+            content: prompt
+        }
+    ], 0.3, 'gpt-4o-mini', 1500);
+
+    const content = response.choices[0].message.content.trim();
+    
+    // Extract JSON from response (handle if wrapped in code blocks)
+    let jsonText = content;
+    if (content.includes('```json')) {
+        jsonText = content.split('```json')[1].split('```')[0].trim();
+    } else if (content.includes('```')) {
+        jsonText = content.split('```')[1].split('```')[0].trim();
+    }
+    
+    const definitions = JSON.parse(jsonText);
+    return definitions;
+}
 
 // Generate story using Groq AI API
 async function generateAIStory(vocabularyWords, storyType, length, tone) {

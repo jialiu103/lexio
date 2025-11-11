@@ -287,6 +287,79 @@ h3 {
     display: none;
 }
 
+.definitions-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.definition-card {
+    background: var(--background);
+    padding: 25px;
+    border-radius: 12px;
+    border-left: 4px solid var(--primary-color);
+    box-shadow: var(--shadow);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.definition-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.definition-word {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.definition-pronunciation {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    margin-bottom: 10px;
+}
+
+.definition-pos {
+    display: inline-block;
+    background: var(--primary-color);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.definition-meaning {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.definition-example {
+    font-style: italic;
+    color: var(--text-secondary);
+    padding: 12px;
+    background: white;
+    border-left: 3px solid var(--secondary-color);
+    border-radius: 4px;
+    margin-bottom: 12px;
+}
+
+.definition-synonyms {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-top: 10px;
+}
+
+.definition-synonyms strong {
+    color: var(--text-primary);
+}
+
 .output-header {
     display: flex;
     justify-content: space-between;

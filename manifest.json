@@ -1,6 +1,6 @@
 {
-  "name": "Vocabulary & Writing Helper",
-  "short_name": "Vocab Helper",
+  "name": "AI Study Helper",
+  "short_name": "AI Study",
   "description": "Learn vocabulary through creative storytelling",
   "start_url": "./index.html",
   "display": "standalone",

@@ -3726,22 +3726,82 @@ const removePhotoBtn = document.getElementById('remove-photo-btn');
 const analyzePhotoBtn = document.getElementById('analyze-photo-btn');
 
 if (homeworkUploadZone) {
+    // Click to upload
     homeworkUploadZone.addEventListener('click', () => {
         homeworkPhoto?.click();
     });
+    
+    // Drag and drop support
+    homeworkUploadZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        homeworkUploadZone.style.borderColor = 'var(--primary-color)';
+        homeworkUploadZone.style.background = '#f0f4ff';
+    });
+    
+    homeworkUploadZone.addEventListener('dragleave', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        homeworkUploadZone.style.borderColor = 'var(--border-color)';
+        homeworkUploadZone.style.background = 'var(--bg-light)';
+    });
+    
+    homeworkUploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        homeworkUploadZone.style.borderColor = 'var(--border-color)';
+        homeworkUploadZone.style.background = 'var(--bg-light)';
+        
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            displayUploadedImage(file);
+        } else {
+            alert('Please drop an image file (photo or screenshot)');
+        }
+    });
+    
+    // Paste from clipboard (for screenshots)
+    document.addEventListener('paste', (e) => {
+        // Only handle paste when in homework helper tab
+        const homeworkTab = document.getElementById('homework-tab');
+        if (!homeworkTab || !homeworkTab.classList.contains('active')) return;
+        
+        const items = e.clipboardData?.items;
+        if (items) {
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    const blob = items[i].getAsFile();
+                    if (blob) {
+                        displayUploadedImage(blob);
+                        e.preventDefault();
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Helper function to display uploaded/pasted image
+function displayUploadedImage(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        if (photoPreview) photoPreview.src = e.target.result;
+        homeworkUploadZone?.classList.add('hidden');
+        photoPreviewContainer?.classList.remove('hidden');
+    };
+    reader.readAsDataURL(file);
+    
+    // Store the file for analysis
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+    if (homeworkPhoto) homeworkPhoto.files = dataTransfer.files;
 }
 
 if (homeworkPhoto) {
     homeworkPhoto.addEventListener('change', (e) => {
         const file = e.target.files?.[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                if (photoPreview) photoPreview.src = e.target.result;
-                homeworkUploadZone?.classList.add('hidden');
-                photoPreviewContainer?.classList.remove('hidden');
-            };
-            reader.readAsDataURL(file);
+            displayUploadedImage(file);
         }
     });
 }

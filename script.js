@@ -3809,11 +3809,14 @@ if (analyzePhotoBtn) {
         analyzePhotoBtn.innerHTML = '⏳ Analyzing...';
         
         try {
+            console.log('Starting photo analysis...');
             const words = await analyzeHomeworkPhoto(file);
+            console.log('Analysis result:', words);
             displayHomeworkWords(words);
         } catch (error) {
-            console.error('Error analyzing photo:', error);
-            alert('❌ Error analyzing photo: ' + error.message);
+            console.error('Full error analyzing photo:', error);
+            console.error('Error stack:', error.stack);
+            alert('❌ Error analyzing photo: ' + error.message + '\n\nCheck console for details.');
         } finally {
             analyzePhotoBtn.disabled = false;
             analyzePhotoBtn.innerHTML = '🔍 Find Vocabulary Words';
@@ -3908,6 +3911,7 @@ Return ONLY valid JSON in this exact format:
 Skip common words like: the, and, is, was, have, said, this, that, with, from
 Focus on academic and challenging vocabulary words.`;
 
+    console.log('Calling OpenAI with image...');
     const response = await callOpenAI([
         {
             role: 'user',
@@ -3918,7 +3922,10 @@ Focus on academic and challenging vocabulary words.`;
         }
     ], 0.3, 'gpt-4o', 2000);
     
+    console.log('OpenAI response received:', response);
+    
     const content = response.choices[0].message.content.trim();
+    console.log('Content from response:', content.substring(0, 200));
     
     // Extract JSON from response (handle if wrapped in code blocks)
     let jsonText = content;
@@ -3928,7 +3935,10 @@ Focus on academic and challenging vocabulary words.`;
         jsonText = content.split('```')[1].split('```')[0].trim();
     }
     
-    return JSON.parse(jsonText);
+    console.log('JSON text to parse:', jsonText.substring(0, 200));
+    const result = JSON.parse(jsonText);
+    console.log('Parsed result:', result);
+    return result;
 }
 
 // Display homework words

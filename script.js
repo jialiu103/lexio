@@ -2221,18 +2221,21 @@ Write ONLY the story text with paragraphs separated by double newlines. No expla
 }
 
 // Copy story
-copyStoryBtn.addEventListener('click', () => {
-    const text = storyContent.innerText;
-    navigator.clipboard.writeText(text).then(() => {
-        copyStoryBtn.textContent = '✓ Copied!';
-        setTimeout(() => {
-            copyStoryBtn.innerHTML = '📋 Copy';
-        }, 2000);
+if (copyStoryBtn) {
+    copyStoryBtn.addEventListener('click', () => {
+        const text = storyContent.innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            copyStoryBtn.textContent = '✓ Copied!';
+            setTimeout(() => {
+                copyStoryBtn.innerHTML = '📋 Copy';
+            }, 2000);
+        });
     });
-});
+}
 
 // Save story
-saveStoryBtn.addEventListener('click', () => {
+if (saveStoryBtn) {
+    saveStoryBtn.addEventListener('click', () => {
     const text = storyContent.innerText;
     const blob = new Blob([text], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
@@ -2248,7 +2251,8 @@ saveStoryBtn.addEventListener('click', () => {
     setTimeout(() => {
         saveStoryBtn.innerHTML = '💾 Save';
     }, 2000);
-});
+    });
+}
 
 // ========== VOCABULARY TRACKING & DASHBOARD ==========
 

@@ -3725,10 +3725,24 @@ const photoPreview = document.getElementById('photo-preview');
 const removePhotoBtn = document.getElementById('remove-photo-btn');
 const analyzePhotoBtn = document.getElementById('analyze-photo-btn');
 
+console.log('Homework Helper: Photo upload elements', {
+    homeworkPhoto: homeworkPhoto,
+    homeworkUploadZone: homeworkUploadZone,
+    photoPreviewContainer: photoPreviewContainer,
+    photoPreview: photoPreview
+});
+
 if (homeworkUploadZone) {
+    console.log('Setting up upload zone click handler');
     // Click to upload
     homeworkUploadZone.addEventListener('click', () => {
-        homeworkPhoto?.click();
+        console.log('Upload zone clicked! Triggering file input...');
+        if (homeworkPhoto) {
+            homeworkPhoto.click();
+            console.log('File input clicked');
+        } else {
+            console.error('homeworkPhoto element not found!');
+        }
     });
     
     // Drag and drop support

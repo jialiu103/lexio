@@ -3856,9 +3856,19 @@ Important:
     const response = await callOpenAI([
         { role: 'system', content: 'You are a helpful vocabulary tutor for students.' },
         { role: 'user', content: prompt }
-    ], 'gpt-4o-mini');
+    ], 0.3, 'gpt-4o-mini', 2000);
     
-    return JSON.parse(response);
+    const content = response.choices[0].message.content.trim();
+    
+    // Extract JSON from response (handle if wrapped in code blocks)
+    let jsonText = content;
+    if (content.includes('```json')) {
+        jsonText = content.split('```json')[1].split('```')[0].trim();
+    } else if (content.includes('```')) {
+        jsonText = content.split('```')[1].split('```')[0].trim();
+    }
+    
+    return JSON.parse(jsonText);
 }
 
 // Analyze photo for vocabulary words
@@ -3906,9 +3916,19 @@ Focus on academic and challenging vocabulary words.`;
                 { type: 'image_url', image_url: { url: base64 } }
             ]
         }
-    ], 'gpt-4o');
+    ], 0.3, 'gpt-4o', 2000);
     
-    return JSON.parse(response);
+    const content = response.choices[0].message.content.trim();
+    
+    // Extract JSON from response (handle if wrapped in code blocks)
+    let jsonText = content;
+    if (content.includes('```json')) {
+        jsonText = content.split('```json')[1].split('```')[0].trim();
+    } else if (content.includes('```')) {
+        jsonText = content.split('```')[1].split('```')[0].trim();
+    }
+    
+    return JSON.parse(jsonText);
 }
 
 // Display homework words

@@ -3649,6 +3649,355 @@ function generateMatchingGame(errors, container) {
     container.appendChild(gameCard);
 }
 
+// ==========================================
+// HOMEWORK HELPER FUNCTIONALITY
+// ==========================================
+
+// Tab switching for input methods
+const methodTabs = document.querySelectorAll('.method-tab');
+const inputMethods = document.querySelectorAll('.input-method');
+
+methodTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        const method = tab.dataset.method;
+        
+        // Update active tab
+        methodTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        // Show corresponding input method
+        inputMethods.forEach(m => m.classList.remove('active'));
+        if (method === 'text') {
+            document.getElementById('text-input-method')?.classList.add('active');
+        } else if (method === 'photo') {
+            document.getElementById('photo-input-method')?.classList.add('active');
+        }
+    });
+});
+
+// Text input handlers
+const homeworkText = document.getElementById('homework-text');
+const clearHomeworkBtn = document.getElementById('clear-homework-btn');
+const analyzeTextBtn = document.getElementById('analyze-text-btn');
+
+if (clearHomeworkBtn) {
+    clearHomeworkBtn.addEventListener('click', () => {
+        if (homeworkText) homeworkText.value = '';
+    });
+}
+
+if (analyzeTextBtn) {
+    analyzeTextBtn.addEventListener('click', async () => {
+        const text = homeworkText?.value.trim();
+        
+        if (!text) {
+            alert('Please paste or type a question first!');
+            return;
+        }
+        
+        analyzeTextBtn.disabled = true;
+        analyzeTextBtn.innerHTML = '⏳ Analyzing...';
+        
+        try {
+            const words = await analyzeHomeworkText(text);
+            displayHomeworkWords(words);
+        } catch (error) {
+            console.error('Error analyzing text:', error);
+            alert('❌ Error analyzing text: ' + error.message);
+        } finally {
+            analyzeTextBtn.disabled = false;
+            analyzeTextBtn.innerHTML = '🔍 Find Vocabulary Words';
+        }
+    });
+}
+
+// Photo upload handlers
+const homeworkPhoto = document.getElementById('homework-photo');
+const homeworkUploadZone = document.getElementById('homework-upload-zone');
+const photoPreviewContainer = document.getElementById('photo-preview-container');
+const photoPreview = document.getElementById('photo-preview');
+const removePhotoBtn = document.getElementById('remove-photo-btn');
+const analyzePhotoBtn = document.getElementById('analyze-photo-btn');
+
+if (homeworkUploadZone) {
+    homeworkUploadZone.addEventListener('click', () => {
+        homeworkPhoto?.click();
+    });
+}
+
+if (homeworkPhoto) {
+    homeworkPhoto.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                if (photoPreview) photoPreview.src = e.target.result;
+                homeworkUploadZone?.classList.add('hidden');
+                photoPreviewContainer?.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+if (removePhotoBtn) {
+    removePhotoBtn.addEventListener('click', () => {
+        if (homeworkPhoto) homeworkPhoto.value = '';
+        if (photoPreview) photoPreview.src = '';
+        homeworkUploadZone?.classList.remove('hidden');
+        photoPreviewContainer?.classList.add('hidden');
+    });
+}
+
+if (analyzePhotoBtn) {
+    analyzePhotoBtn.addEventListener('click', async () => {
+        const file = homeworkPhoto?.files?.[0];
+        
+        if (!file) {
+            alert('Please upload a photo first!');
+            return;
+        }
+        
+        analyzePhotoBtn.disabled = true;
+        analyzePhotoBtn.innerHTML = '⏳ Analyzing...';
+        
+        try {
+            const words = await analyzeHomeworkPhoto(file);
+            displayHomeworkWords(words);
+        } catch (error) {
+            console.error('Error analyzing photo:', error);
+            alert('❌ Error analyzing photo: ' + error.message);
+        } finally {
+            analyzePhotoBtn.disabled = false;
+            analyzePhotoBtn.innerHTML = '🔍 Find Vocabulary Words';
+        }
+    });
+}
+
+// Analyze text for vocabulary words
+async function analyzeHomeworkText(text) {
+    const prompt = `Analyze this homework question or test question and extract ALL vocabulary words that might be challenging for a middle school student. Focus on academic words, subject-specific terms, and words that are important to understand the question.
+
+Question: "${text}"
+
+For each vocabulary word found, provide:
+1. The word itself
+2. Part of speech
+3. A simple, kid-friendly definition
+4. How it's used in THIS specific question
+5. A different example sentence
+
+Return ONLY valid JSON in this exact format:
+{
+  "words": [
+    {
+      "word": "protagonist",
+      "partOfSpeech": "noun",
+      "definition": "The main character in a story",
+      "contextUsage": "In this question, it refers to the main character who experienced something",
+      "example": "Harry Potter is the protagonist of his story"
+    }
+  ]
+}
+
+Important:
+- Skip common words like: the, and, is, was, have, said, this, that, with, from
+- Focus on words a student might not know
+- Keep definitions simple and clear
+- If there are no challenging vocabulary words, return an empty words array`;
+
+    const response = await callOpenAI([
+        { role: 'system', content: 'You are a helpful vocabulary tutor for students.' },
+        { role: 'user', content: prompt }
+    ], 'gpt-4o-mini');
+    
+    return JSON.parse(response);
+}
+
+// Analyze photo for vocabulary words
+async function analyzeHomeworkPhoto(file) {
+    // Convert image to base64
+    const base64 = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.readAsDataURL(file);
+    });
+    
+    const prompt = `Look at this homework or test question image and:
+1. Read ALL the text in the image (OCR)
+2. Extract ALL vocabulary words that might be challenging for a middle school student
+
+For each vocabulary word found, provide:
+- The word itself
+- Part of speech
+- A simple, kid-friendly definition
+- How it's used in the question shown
+- A different example sentence
+
+Return ONLY valid JSON in this exact format:
+{
+  "extractedText": "the full text you see in the image",
+  "words": [
+    {
+      "word": "protagonist",
+      "partOfSpeech": "noun",
+      "definition": "The main character in a story",
+      "contextUsage": "In this question, it refers to the main character who experienced something",
+      "example": "Harry Potter is the protagonist of his story"
+    }
+  ]
+}
+
+Skip common words like: the, and, is, was, have, said, this, that, with, from
+Focus on academic and challenging vocabulary words.`;
+
+    const response = await callOpenAI([
+        {
+            role: 'user',
+            content: [
+                { type: 'text', text: prompt },
+                { type: 'image_url', image_url: { url: base64 } }
+            ]
+        }
+    ], 'gpt-4o');
+    
+    return JSON.parse(response);
+}
+
+// Display homework words
+function displayHomeworkWords(data) {
+    const homeworkResults = document.getElementById('homework-results');
+    const homeworkWordsGrid = document.getElementById('homework-words-grid');
+    const homeworkEmpty = document.getElementById('homework-empty');
+    
+    if (!homeworkResults || !homeworkWordsGrid) return;
+    
+    const words = data.words || [];
+    
+    if (words.length === 0) {
+        homeworkWordsGrid.innerHTML = '';
+        homeworkEmpty?.classList.remove('hidden');
+        homeworkResults.classList.remove('hidden');
+        homeworkResults.scrollIntoView({ behavior: 'smooth' });
+        return;
+    }
+    
+    homeworkEmpty?.classList.add('hidden');
+    
+    // Generate word cards
+    homeworkWordsGrid.innerHTML = words.map(word => `
+        <div class="homework-word-card">
+            <div class="hw-word-header">
+                <h4 class="hw-word">${word.word}</h4>
+                <span class="hw-pos-badge">${word.partOfSpeech}</span>
+            </div>
+            <div class="hw-definition">
+                <strong>📖 Definition:</strong>
+                <p>${word.definition}</p>
+            </div>
+            <div class="hw-context">
+                <strong>💡 In your question:</strong>
+                <p>${word.contextUsage}</p>
+            </div>
+            <div class="hw-example">
+                <strong>✏️ Example:</strong>
+                <p>"${word.example}"</p>
+            </div>
+            <button class="btn btn-small save-hw-word-btn" data-word='${JSON.stringify(word)}'>
+                💾 Save to My Words
+            </button>
+        </div>
+    `).join('');
+    
+    // Show results
+    homeworkResults.classList.remove('hidden');
+    homeworkResults.scrollIntoView({ behavior: 'smooth' });
+    
+    // Add event listeners to save buttons
+    document.querySelectorAll('.save-hw-word-btn').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            if (!currentUser) {
+                alert('Please sign in to save words!');
+                return;
+            }
+            
+            const wordData = JSON.parse(this.dataset.word);
+            
+            // Convert to format compatible with saveWordToFirebase
+            const wordToSave = {
+                word: wordData.word,
+                pronunciation: `/${wordData.word}/`, // Simple placeholder
+                meanings: [{
+                    partOfSpeech: wordData.partOfSpeech,
+                    definition: wordData.definition,
+                    example: wordData.example,
+                    synonyms: [],
+                    antonyms: []
+                }]
+            };
+            
+            try {
+                this.disabled = true;
+                this.innerHTML = '⏳ Saving...';
+                await saveWordToFirebase(wordToSave);
+                this.innerHTML = '✅ Saved!';
+                setTimeout(() => {
+                    this.innerHTML = '💾 Save to My Words';
+                    this.disabled = false;
+                }, 2000);
+                loadUserWords();
+            } catch (error) {
+                console.error('Error saving word:', error);
+                alert('Error saving word: ' + error.message);
+                this.innerHTML = '💾 Save to My Words';
+                this.disabled = false;
+            }
+        });
+    });
+    
+    // Save all words button
+    const saveAllBtn = document.getElementById('save-all-words-btn');
+    if (saveAllBtn) {
+        saveAllBtn.onclick = async () => {
+            if (!currentUser) {
+                alert('Please sign in to save words!');
+                return;
+            }
+            
+            saveAllBtn.disabled = true;
+            saveAllBtn.innerHTML = '⏳ Saving all...';
+            
+            try {
+                for (const wordData of words) {
+                    const wordToSave = {
+                        word: wordData.word,
+                        pronunciation: `/${wordData.word}/`,
+                        meanings: [{
+                            partOfSpeech: wordData.partOfSpeech,
+                            definition: wordData.definition,
+                            example: wordData.example,
+                            synonyms: [],
+                            antonyms: []
+                        }]
+                    };
+                    await saveWordToFirebase(wordToSave);
+                }
+                saveAllBtn.innerHTML = '✅ All Saved!';
+                setTimeout(() => {
+                    saveAllBtn.innerHTML = '💾 Save All to My Words';
+                    saveAllBtn.disabled = false;
+                }, 2000);
+                loadUserWords();
+            } catch (error) {
+                console.error('Error saving words:', error);
+                alert('Error saving words: ' + error.message);
+                saveAllBtn.innerHTML = '💾 Save All to My Words';
+                saveAllBtn.disabled = false;
+            }
+        };
+    }
+}
+
 // Register Service Worker for PWA
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

@@ -44,7 +44,7 @@
         <nav class="tabs">
             <button class="tab-btn active" data-tab="vocabulary">Lookup</button>
             <button class="tab-btn" data-tab="review">My Words</button>
-            <button class="tab-btn" data-tab="writing">Writing (Coming Soon)</button>
+            <button class="tab-btn" data-tab="homework">📸 Homework Helper</button>
         </nav>
 
         <main>
@@ -143,70 +143,61 @@
                 </div>
             </section>
 
-            <!-- Writing Tab -->
-                        </section>
-
-            <!-- Writing Tab -->
-            <section id="writing-tab" class="tab-content">
-                <div class="writing-section">
-                    <h2>✍️ Writing Practice & Feedback</h2>
-                    <p class="instructions">Type your writing OR upload a photo of your handwritten work for AI feedback!</p>
+            <!-- Homework Helper Tab -->
+            <section id="homework-tab" class="tab-content">
+                <div class="homework-section">
+                    <h2>📸 Homework Helper</h2>
+                    <p class="instructions">Paste a question from an online test or upload a photo of your homework to understand all the vocabulary words!</p>
                     
                     <!-- Input Method Tabs -->
                     <div class="input-method-tabs">
-                        <button class="method-tab active" data-method="text">📝 Type Text</button>
-                        <button class="method-tab" data-method="camera">📷 Take Photo</button>
-                        <button class="method-tab" data-method="image">� Upload Image</button>
+                        <button class="method-tab active" data-method="text">📝 Paste Text</button>
+                        <button class="method-tab" data-method="photo">📷 Upload Photo</button>
                     </div>
                     
-                    <div class="writing-container">
+                    <div class="homework-container">
                         <!-- Text Input Method -->
                         <div id="text-input-method" class="input-method active">
-                            <div class="writing-input-area">
-                                <h3>Your Writing</h3>
-                                <textarea id="writing-input" placeholder="Paste or type your paragraph here...
+                            <div class="homework-input-area">
+                                <h3>📝 Paste Your Question</h3>
+                                <textarea id="homework-text" placeholder="Paste your test question or homework problem here...
 
-Example topics:
-- Describe your favorite place
-- Tell a story about an adventure
-- Explain something you learned
-- Share your opinion on a topic
+Example:
+The protagonist felt melancholy after the calamity that befell his village.
 
-Minimum 3 sentences recommended for best feedback."></textarea>
-                                <div class="writing-tools">
-                                    <span id="word-counter">0 words</span>
-                                    <button id="clear-writing-btn" class="btn btn-secondary">Clear</button>
-                                    <button id="analyze-writing-btn" class="btn btn-primary">🔍 Get Feedback</button>
+We'll identify all the vocabulary words and explain them!" rows="6"></textarea>
+                                <div class="homework-tools">
+                                    <button id="clear-homework-btn" class="btn btn-secondary">Clear</button>
+                                    <button id="analyze-text-btn" class="btn btn-primary">🔍 Find Vocabulary Words</button>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Camera Input Method -->
-                        <div id="camera-input-method" class="input-method">
-                            <div class="camera-area">
-                                <h3>Take Photo of Student Work</h3>
-                                <p class="upload-instructions">Position the document clearly in view and take a photo</p>
+                        <!-- Photo Upload Method -->
+                        <div id="photo-input-method" class="input-method">
+                            <div class="photo-upload-area">
+                                <h3>📷 Upload Photo of Homework</h3>
+                                <p class="upload-instructions">Take a clear photo of your paper homework or worksheet</p>
                                 
-                                <div id="camera-container" class="camera-container">
-                                    <video id="camera-video" autoplay playsinline></video>
-                                    <div class="camera-controls">
-                                        <button id="start-camera-btn" class="btn btn-primary">📷 Start Camera</button>
-                                        <button id="capture-photo-btn" class="btn btn-primary hidden">📸 Capture Photo</button>
-                                        <button id="stop-camera-btn" class="btn btn-secondary hidden">Stop Camera</button>
+                                <div class="upload-zone" id="homework-upload-zone">
+                                    <input type="file" id="homework-photo" accept="image/*" hidden>
+                                    <div class="upload-placeholder">
+                                        <div class="upload-icon">�</div>
+                                        <p>Click to upload or drag & drop</p>
+                                        <p class="upload-hint">Supports: JPG, PNG (Max 10MB)</p>
                                     </div>
                                 </div>
 
-                                <canvas id="camera-canvas" hidden></canvas>
-
-                                <div id="camera-preview-container" class="image-preview-container hidden">
-                                    <img id="camera-preview" alt="Captured Photo">
-                                    <button id="retake-photo-btn" class="btn btn-secondary">Retake Photo</button>
-                                    <button id="analyze-camera-btn" class="btn btn-primary">🔍 Analyze Photo</button>
+                                <div id="photo-preview-container" class="image-preview-container hidden">
+                                    <img id="photo-preview" alt="Homework Preview">
+                                    <div class="photo-tools">
+                                        <button id="remove-photo-btn" class="btn btn-secondary">Remove Photo</button>
+                                        <button id="analyze-photo-btn" class="btn btn-primary">🔍 Find Vocabulary Words</button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Image Upload Method -->
+                        </div>                        <!-- Image Upload Method -->
                         <div id="image-input-method" class="input-method">
                             <div class="image-upload-area">
                                 <h3>Upload Student Work</h3>
@@ -229,63 +220,17 @@ Minimum 3 sentences recommended for best feedback."></textarea>
                             </div>
                         </div>
 
-                        <div id="feedback-area" class="feedback-area hidden">
-                            <h3>📝 Feedback & Corrections</h3>
-                            
-                            <!-- Original Text Section -->
-                            <div class="feedback-section" id="transcribed-section">
-                                <h4>📄 Your Original Text</h4>
-                                <div id="transcribed-text" class="original-text"></div>
-                            </div>
-
-                            <!-- Error Corrections Section -->
-                            <div class="feedback-section" id="errors-section">
-                                <h4>🔍 Errors Found & Corrections</h4>
-                                <p class="error-instruction">Click on each error to see the correction and explanation</p>
-                                <div id="errors-list" class="errors-container"></div>
+                        <!-- Results Area -->
+                        <div id="homework-results" class="homework-results hidden">
+                            <div class="results-header">
+                                <h3>� Vocabulary Words Found</h3>
+                                <button id="save-all-words-btn" class="btn btn-secondary">💾 Save All to My Words</button>
                             </div>
                             
-                            <div class="feedback-section">
-                                <h4>Overall Score</h4>
-                                <div class="score-display">
-                                    <div class="score-circle">
-                                        <span id="overall-score">-</span>
-                                        <span class="score-label">/100</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="feedback-section">
-                                <h4>✅ Strengths</h4>
-                                <ul id="strengths-list"></ul>
-                            </div>
-
-                            <div class="feedback-section">
-                                <h4>⚠️ Areas to Improve</h4>
-                                <ul id="improvements-list"></ul>
-                            </div>
-
-                            <div class="feedback-section">
-                                <h4>📖 Grammar & Style</h4>
-                                <div id="grammar-feedback"></div>
-                            </div>
-
-                            <div class="feedback-section">
-                                <h4>💡 Specific Suggestions</h4>
-                                <div id="suggestions-feedback"></div>
-                            </div>
-
-                            <div class="feedback-section">
-                                <h4>✨ Fully Corrected Version</h4>
-                                <div id="revised-version" class="revised-text"></div>
-                                <button id="copy-revised-btn" class="btn btn-secondary">📋 Copy Corrected Version</button>
-                            </div>
-
-                            <!-- Practice Games Section -->
-                            <div class="feedback-section" id="games-section">
-                                <h4>🎮 Practice Games</h4>
-                                <p class="games-instruction">Reinforce your learning with these fun games!</p>
-                                <div id="games-container"></div>
+                            <div id="homework-words-grid" class="homework-words-grid"></div>
+                            
+                            <div id="homework-empty" class="empty-state hidden">
+                                <p>No challenging vocabulary words found in this text. Try another question!</p>
                             </div>
                         </div>
                     </div>

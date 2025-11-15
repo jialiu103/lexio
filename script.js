@@ -4151,9 +4151,15 @@ async function checkGamesAvailability() {
     console.log('Current user:', currentUser ? 'Signed in' : 'Not signed in');
     console.log('Saved words count:', savedWords.length);
     
+    const gamesEmpty = document.getElementById('games-empty');
+    const gamesSelection = document.getElementById('games-selection');
+    
+    console.log('games-empty element:', gamesEmpty);
+    console.log('games-selection element:', gamesSelection);
+    
     if (!currentUser) {
-        document.getElementById('games-empty').classList.remove('hidden');
-        document.getElementById('games-selection').classList.add('hidden');
+        gamesEmpty?.classList.remove('hidden');
+        gamesSelection?.classList.add('hidden');
         return;
     }
     
@@ -4165,12 +4171,15 @@ async function checkGamesAvailability() {
     console.log('Words available for games:', savedWords.length);
     
     if (savedWords.length < 4) {
-        document.getElementById('games-empty').classList.remove('hidden');
-        document.getElementById('games-selection').classList.add('hidden');
+        console.log('Not enough words, showing empty state');
+        gamesEmpty?.classList.remove('hidden');
+        gamesSelection?.classList.add('hidden');
     } else {
-        document.getElementById('games-empty').classList.add('hidden');
-        document.getElementById('games-selection').classList.remove('hidden');
+        console.log('Enough words! Showing games');
+        gamesEmpty?.classList.add('hidden');
+        gamesSelection?.classList.remove('hidden');
         gamesData.words = savedWords;
+        console.log('Games data loaded with', gamesData.words.length, 'words');
     }
 }
 

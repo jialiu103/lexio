@@ -401,6 +401,11 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
         
         btn.classList.add('active');
         document.getElementById(`${tabName}-tab`).classList.add('active');
+        
+        // Check games availability when switching to games tab
+        if (tabName === 'games') {
+            checkGamesAvailability();
+        }
     });
 });
 
@@ -4142,13 +4147,22 @@ function initGames() {
 }
 
 async function checkGamesAvailability() {
+    console.log('Checking games availability...');
+    console.log('Current user:', currentUser ? 'Signed in' : 'Not signed in');
+    console.log('Saved words count:', savedWords.length);
+    
     if (!currentUser) {
         document.getElementById('games-empty').classList.remove('hidden');
         document.getElementById('games-selection').classList.add('hidden');
         return;
     }
     
-    const savedWords = await loadUserWords();
+    // Make sure words are loaded
+    if (savedWords.length === 0) {
+        await loadUserWords();
+    }
+    
+    console.log('Words available for games:', savedWords.length);
     
     if (savedWords.length < 4) {
         document.getElementById('games-empty').classList.remove('hidden');

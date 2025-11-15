@@ -4,6 +4,11 @@
     box-sizing: border-box;
 }
 
+/* Utility Classes */
+.hidden {
+    display: none !important;
+}
+
 :root {
     --primary-color: #6366f1;
     --primary-dark: #4f46e5;
